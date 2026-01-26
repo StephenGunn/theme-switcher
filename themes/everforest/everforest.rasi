@@ -1,0 +1,67 @@
+/**
+ * Everforest theme for Rofi
+ */
+
+* {
+    bg: #2b3339;
+    bg-alt: #323d43;
+    fg: #d3c6aa;
+    fg-alt: #859289;
+
+    red: #e67e80;
+    green: #a7c080;
+    yellow: #dbbc7f;
+    blue: #7fbbb3;
+    purple: #d699b6;
+    aqua: #83c092;
+    orange: #e69875;
+
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    background-color: @bg;
+    border: 2px;
+    border-color: @green;
+    padding: 10px;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [inputbar, listview];
+}
+
+inputbar {
+    background-color: @bg-alt;
+    padding: 10px;
+    children: [prompt, entry];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @green;
+    padding: 0 10px 0 0;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg;
+}
+
+listview {
+    background-color: transparent;
+    padding: 10px 0 0 0;
+    lines: 10;
+}
+
+element {
+    background-color: transparent;
+    text-color: @fg-alt;
+    padding: 5px;
+}
+
+element selected {
+    background-color: @bg-alt;
+    text-color: @green;
+}

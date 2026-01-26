@@ -1,0 +1,42 @@
+{
+  "name": "Everforest",
+  "description": "Comfortable & pleasant forest-inspired color scheme",
+  "apps": {
+    "neovim": {
+      "colorscheme": "everforest",
+      "background": "dark"
+    },
+    "lualine": {
+      "theme": "everforest"
+    },
+    "ghostty": {
+      "theme": "Everforest"
+    },
+    "hyprland": {
+      "colors_file": "everforest.conf"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "rofi": {
+      "theme_file": "everforest.rasi"
+    },
+    "gtk": {
+      "theme_name": "Colloid-Dark-Everforest",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S colloid-gtk-theme-git"
+    },
+    "kvantum": {
+      "theme_name": "Everforest",
+      "note": "Install: yay -S kvantum"
+    },
+    "yazi": {
+      "flavor": "everforest-dark"
+    }
+  },
+  "pywal": {
+    "colors_file": "colors.json",
+    "apps": ["starship", "dunst"]
+  }
+}

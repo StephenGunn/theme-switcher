@@ -1,0 +1,21 @@
+# Cache and generated files
+*.cache
+.DS_Store
+
+# Personal wallpapers (too large for git)
+themes/*/wallpapers/*
+!themes/*/wallpapers/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Test files
+test/
+*.test.sh
+
+# Internal documentation and AI assistant configs
+CLAUDE.md
+.claude/
+*.ai.md

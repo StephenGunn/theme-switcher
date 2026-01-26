@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Random Wallpaper Selector
+# Selects a random wallpaper from the current theme's wallpaper directory using swww
+
+set -e
+
+# Get the theme switcher project directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+CURRENT_THEME_FILE="$HOME/.config/current-theme"
+
+# Read current theme
+if [ ! -f "$CURRENT_THEME_FILE" ]; then
+    echo "Error: No current theme set. Run theme-switch first."
+    exit 1
+fi
+
+THEME_NAME=$(cat "$CURRENT_THEME_FILE")
+WALLPAPER_DIR="$PROJECT_DIR/themes/$THEME_NAME/wallpapers"
+
+# Check if wallpaper directory exists
+if [ ! -d "$WALLPAPER_DIR" ]; then
+    echo "Error: Wallpaper directory not found: $WALLPAPER_DIR"
+    exit 1
+fi
+
+# Get all image files from the wallpaper directory
+mapfile -t WALLPAPERS < <(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) 2>/dev/null)
+
+if [ ${#WALLPAPERS[@]} -eq 0 ]; then
+    echo "Error: No wallpapers found in $WALLPAPER_DIR"
+    exit 1
+fi
+
+# Select a random wallpaper
+RANDOM_WALLPAPER="${WALLPAPERS[$RANDOM % ${#WALLPAPERS[@]}]}"
+echo "Selected wallpaper: $(basename "$RANDOM_WALLPAPER")"
+
+# Set wallpaper with smooth transition using swww (random effect each time)
+swww img "$RANDOM_WALLPAPER" \
+    --transition-type random \
+    --transition-duration 2 \
+    --transition-fps 60
+
+echo "✓ Applied wallpaper: $(basename "$RANDOM_WALLPAPER") with random transition"

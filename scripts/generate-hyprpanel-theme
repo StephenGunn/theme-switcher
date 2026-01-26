@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+# Generate comprehensive HyprPanel theme from simplified config
+# Uses Nord as template and replaces colors based on color mapping
+
+set -e
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <theme-name>"
+    echo "Example: $0 kanagawa-dark"
+    exit 1
+fi
+
+THEME_NAME="$1"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+THEME_DIR="$PROJECT_DIR/themes/$THEME_NAME"
+TEMPLATE_THEME="$PROJECT_DIR/themes/nord/hyprpanel.json"
+
+if [ ! -f "$THEME_DIR/colors.json" ]; then
+    echo "Error: $THEME_DIR/colors.json not found"
+    exit 1
+fi
+
+if [ ! -f "$TEMPLATE_THEME" ]; then
+    echo "Error: Template theme not found"
+    exit 1
+fi
+
+echo "Generating comprehensive HyprPanel theme for: $THEME_NAME"
+
+# Read colors from theme
+BG=$(jq -r '.special.background' "$THEME_DIR/colors.json")
+FG=$(jq -r '.special.foreground' "$THEME_DIR/colors.json")
+C0=$(jq -r '.colors.color0' "$THEME_DIR/colors.json")
+C1=$(jq -r '.colors.color1' "$THEME_DIR/colors.json")
+C2=$(jq -r '.colors.color2' "$THEME_DIR/colors.json")
+C3=$(jq -r '.colors.color3' "$THEME_DIR/colors.json")
+C4=$(jq -r '.colors.color4' "$THEME_DIR/colors.json")
+C5=$(jq -r '.colors.color5' "$THEME_DIR/colors.json")
+C6=$(jq -r '.colors.color6' "$THEME_DIR/colors.json")
+C7=$(jq -r '.colors.color7' "$THEME_DIR/colors.json")
+C8=$(jq -r '.colors.color8' "$THEME_DIR/colors.json")
+C14=$(jq -r '.colors.color14' "$THEME_DIR/colors.json")
+
+# Nord colors (to replace in template)
+NORD_BG="#2e3440"
+NORD_BG_DARKER="#3b4252"
+NORD_BG_LIGHTER="#434c53"
+NORD_BG_LIGHTEST="#4c566a"
+NORD_FG="#d8dee9"
+NORD_FG_DIM="#5e81ac"
+NORD_BLUE="#88c0d0"
+NORD_CYAN="#8fbcbb"
+NORD_BLUE2="#81a1c1"
+
+# Create color mapping
+cp "$TEMPLATE_THEME" "$THEME_DIR/hyprpanel.json.tmp"
+
+sed -i "s|$NORD_BG|$BG|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_BG_DARKER|$C0|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_BG_LIGHTER|$C8|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_BG_LIGHTEST|$C8|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_FG|$FG|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_FG_DIM|$C8|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_BLUE|$C4|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_CYAN|$C6|g" "$THEME_DIR/hyprpanel.json.tmp"
+sed -i "s|$NORD_BLUE2|$C14|g" "$THEME_DIR/hyprpanel.json.tmp"
+
+# Backup old simplified config
+if [ -f "$THEME_DIR/hyprpanel.json" ]; then
+    mv "$THEME_DIR/hyprpanel.json" "$THEME_DIR/hyprpanel-simplified.json.bak"
+fi
+
+# Replace with comprehensive theme
+mv "$THEME_DIR/hyprpanel.json.tmp" "$THEME_DIR/hyprpanel.json"
+
+echo "✓ Generated comprehensive HyprPanel theme"
+echo "  Backup of simplified version: hyprpanel-simplified.json.bak"
+echo "  New theme: hyprpanel.json ($(wc -l < "$THEME_DIR/hyprpanel.json") lines)"

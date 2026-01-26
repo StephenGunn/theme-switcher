@@ -1,0 +1,42 @@
+{
+  "name": "Tokyo Night",
+  "description": "Clean, dark theme inspired by the lights of Tokyo at night",
+  "apps": {
+    "neovim": {
+      "colorscheme": "tokyonight",
+      "background": "dark"
+    },
+    "lualine": {
+      "theme": "tokyonight"
+    },
+    "ghostty": {
+      "theme": "Tokyo Night"
+    },
+    "hyprland": {
+      "colors_file": "tokyo-night.conf"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "rofi": {
+      "theme_file": "tokyo-night.rasi"
+    },
+    "gtk": {
+      "theme_name": "Tokyonight-Dark",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S tokyonight-gtk-theme-git"
+    },
+    "kvantum": {
+      "theme_name": "TokyoNight",
+      "note": "Install: yay -S kvantum"
+    },
+    "yazi": {
+      "flavor": "tokyo-night"
+    }
+  },
+  "pywal": {
+    "colors_file": "colors.json",
+    "apps": ["starship", "dunst"]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Kanagawa Dark",
+  "description": "Dark theme inspired by the colors of the famous painting by Katsushika Hokusai",
+  "apps": {
+    "neovim": {
+      "colorscheme": "kanagawa",
+      "background": "dark"
+    },
+    "lualine": {
+      "theme": "kanagawa"
+    },
+    "ghostty": {
+      "theme": "Kanagawa"
+    },
+    "hyprland": {
+      "colors_file": "kanagawa-dark.conf"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "rofi": {
+      "theme_file": "kanagawa-dark.rasi"
+    },
+    "gtk": {
+      "theme_name": "Kanagawa-Dark",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S kanagawa-gtk-theme-git"
+    },
+    "kvantum": {
+      "theme_name": "Kanagawa",
+      "note": "Install: yay -S kvantum (May need manual Kanagawa theme)"
+    },
+    "yazi": {
+      "flavor": "kanagawa"
+    }
+  },
+  "pywal": {
+    "colors_file": "colors.json",
+    "apps": ["starship", "dunst"]
+  }
+}
