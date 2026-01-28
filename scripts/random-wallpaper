@@ -33,14 +33,75 @@ if [ ${#WALLPAPERS[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Select a random wallpaper
-RANDOM_WALLPAPER="${WALLPAPERS[$RANDOM % ${#WALLPAPERS[@]}]}"
-echo "Selected wallpaper: $(basename "$RANDOM_WALLPAPER")"
+# Get the current wallpaper from swww query (if available)
+CURRENT_WALLPAPER=""
+if command -v swww &> /dev/null; then
+    # swww query returns lines like: ": DP-2: 2560x1440, scale: 1, currently displaying: image: /path/to/wallpaper.jpg"
+    # Extract just the path after "image: "
+    CURRENT_WALLPAPER=$(swww query 2>/dev/null | head -1 | sed 's/.*image: //')
+fi
 
-# Set wallpaper with smooth transition using swww (random effect each time)
-swww img "$RANDOM_WALLPAPER" \
-    --transition-type random \
-    --transition-duration 2 \
-    --transition-fps 60
+# Select a random wallpaper, ensuring it's different from the current one
+if [ ${#WALLPAPERS[@]} -eq 1 ]; then
+    # Only one wallpaper available
+    RANDOM_WALLPAPER="${WALLPAPERS[0]}"
+    echo "Only one wallpaper available: $(basename "$RANDOM_WALLPAPER")"
+else
+    # Pick a different wallpaper than the current one
+    RANDOM_WALLPAPER="${WALLPAPERS[$RANDOM % ${#WALLPAPERS[@]}]}"
 
-echo "✓ Applied wallpaper: $(basename "$RANDOM_WALLPAPER") with random transition"
+    # Keep trying until we get a different one (with max attempts to avoid infinite loop)
+    ATTEMPTS=0
+    while [ "$RANDOM_WALLPAPER" == "$CURRENT_WALLPAPER" ] && [ $ATTEMPTS -lt 10 ]; do
+        RANDOM_WALLPAPER="${WALLPAPERS[$RANDOM % ${#WALLPAPERS[@]}]}"
+        ((ATTEMPTS++))
+    done
+
+    echo "Selected wallpaper: $(basename "$RANDOM_WALLPAPER")"
+fi
+
+# Curated set of nice transitions
+TRANSITIONS=(
+    "center"                    # Circle grows from center
+    "outer"                     # Circle shrinks from edges to center
+    "grow:top-right"           # Circle grows from top-right corner
+    "outer:top-right"          # Circle shrinks to top-right corner
+    "wave:45"                  # Wavy diagonal sweep
+)
+
+# Pick a random transition from the curated set
+SELECTED_TRANSITION="${TRANSITIONS[$RANDOM % ${#TRANSITIONS[@]}]}"
+
+# Parse transition type and position/angle
+if [[ "$SELECTED_TRANSITION" == *":"* ]]; then
+    TRANS_TYPE="${SELECTED_TRANSITION%%:*}"
+    TRANS_VALUE="${SELECTED_TRANSITION##*:}"
+
+    echo "Applying transition: $TRANS_TYPE from/to $TRANS_VALUE"
+
+    # wave uses --transition-angle, grow/outer use --transition-pos
+    if [[ "$TRANS_TYPE" == "wave" ]]; then
+        swww img "$RANDOM_WALLPAPER" \
+            --transition-type "$TRANS_TYPE" \
+            --transition-angle "$TRANS_VALUE" \
+            --transition-duration 2 \
+            --transition-fps 144
+    else
+        # For grow/outer positions
+        swww img "$RANDOM_WALLPAPER" \
+            --transition-type "$TRANS_TYPE" \
+            --transition-pos "$TRANS_VALUE" \
+            --transition-duration 2 \
+            --transition-fps 144
+    fi
+else
+    echo "Applying transition: $SELECTED_TRANSITION"
+
+    # For simple transitions like center/outer
+    swww img "$RANDOM_WALLPAPER" \
+        --transition-type "$SELECTED_TRANSITION" \
+        --transition-duration 2 \
+        --transition-fps 144
+fi
+
+echo "✓ Applied wallpaper: $(basename "$RANDOM_WALLPAPER") with $SELECTED_TRANSITION transition"
