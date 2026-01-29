@@ -33,6 +33,20 @@
     },
     "yazi": {
       "flavor": "everforest-dark"
+    },
+    "tmux": {
+      "colors": {
+        "background_dark": "#272e33",
+        "foreground": "#d3c6aa",
+        "foreground_dim": "#859289",
+        "accent": "#dbbc7f",
+        "separator": "#3d484d",
+        "inactive_window": "#525c62",
+        "inactive_text": "#7a8478",
+        "active_window": "#a7c080",
+        "clock": "#7fbbb3",
+        "date": "#525c62"
+      }
     }
   },
   "pywal": {

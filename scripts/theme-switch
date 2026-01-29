@@ -436,6 +436,96 @@ EOF
     log_success "Yazi flavor applied: $yazi_flavor"
 }
 
+# Apply Tmux theme
+apply_tmux() {
+    local theme_name="$1"
+    local config="$2"
+
+    # Check if tmux colors are defined
+    local has_tmux_colors=$(echo "$config" | jq -r '.apps.tmux.colors // empty')
+
+    if [ -z "$has_tmux_colors" ]; then
+        log_warn "No tmux colors specified, skipping"
+        return 0
+    fi
+
+    log_info "Applying Tmux theme colors"
+
+    # Extract colors from config
+    local bg_dark=$(echo "$config" | jq -r '.apps.tmux.colors.background_dark')
+    local fg=$(echo "$config" | jq -r '.apps.tmux.colors.foreground')
+    local fg_dim=$(echo "$config" | jq -r '.apps.tmux.colors.foreground_dim')
+    local accent=$(echo "$config" | jq -r '.apps.tmux.colors.accent')
+    local separator=$(echo "$config" | jq -r '.apps.tmux.colors.separator')
+    local inactive_win=$(echo "$config" | jq -r '.apps.tmux.colors.inactive_window')
+    local inactive_txt=$(echo "$config" | jq -r '.apps.tmux.colors.inactive_text')
+    local active_win=$(echo "$config" | jq -r '.apps.tmux.colors.active_window')
+    local clock=$(echo "$config" | jq -r '.apps.tmux.colors.clock')
+    local date=$(echo "$config" | jq -r '.apps.tmux.colors.date')
+
+    # Read template and substitute colors
+    local template_file="$TEMPLATES_DIR/tmux.conf"
+
+    if [ ! -f "$template_file" ]; then
+        log_error "Tmux template not found: $template_file"
+        return 1
+    fi
+
+    # Generate themed tmux config snippet
+    local tmux_colors=$(cat "$template_file" | \
+        sed "s/{background_dark}/$bg_dark/g" | \
+        sed "s/{foreground}/$fg/g" | \
+        sed "s/{foreground_dim}/$fg_dim/g" | \
+        sed "s/{accent}/$accent/g" | \
+        sed "s/{separator}/$separator/g" | \
+        sed "s/{inactive_window}/$inactive_win/g" | \
+        sed "s/{inactive_text}/$inactive_txt/g" | \
+        sed "s/{active_window}/$active_win/g" | \
+        sed "s/{clock}/$clock/g" | \
+        sed "s/{date}/$date/g")
+
+    # Update the tmux config by replacing the status bar section
+    local tmux_config="$HOME/dotfiles/.tmux/.tmux.conf"
+
+    if [ ! -f "$tmux_config" ]; then
+        log_warn "Tmux config not found at $tmux_config"
+        return 0
+    fi
+
+    # Use sed to replace the status bar section
+    # Find start: "# Status Bar Styling"
+    # Find end: "# ============" (before Initialize TPM)
+    local start_line=$(grep -n "# Status Bar Styling" "$tmux_config" | cut -d: -f1)
+    local end_line=$(grep -n "# Initialize TPM" "$tmux_config" | head -1 | cut -d: -f1)
+
+    if [ -z "$start_line" ] || [ -z "$end_line" ]; then
+        log_error "Could not find tmux status bar section markers"
+        return 1
+    fi
+
+    # Decrement end_line to get line before the TPM section
+    end_line=$((end_line - 1))
+
+    # Create new config with replaced section
+    {
+        head -n $((start_line - 1)) "$tmux_config"
+        echo "$tmux_colors"
+        echo ""
+        tail -n +$((end_line + 1)) "$tmux_config"
+    } > "$tmux_config.tmp"
+
+    mv "$tmux_config.tmp" "$tmux_config"
+
+    # Reload tmux if running
+    if command -v tmux &> /dev/null && tmux list-sessions &> /dev/null; then
+        tmux source-file "$tmux_config" 2>/dev/null && \
+            log_success "Tmux theme applied and reloaded" || \
+            log_success "Tmux theme applied (reload manually with Ctrl-b r)"
+    else
+        log_success "Tmux theme applied (will take effect on next tmux start)"
+    fi
+}
+
 # Apply Kvantum theme (Qt applications)
 apply_kvantum() {
     local theme_name="$1"
@@ -537,6 +627,8 @@ reload_apps() {
     log_info "Reloading applications..."
 
     # Reload Hyprland
+    # Note: streaming.conf is sourced by hyprland.conf, so streaming mode
+    # workspace gaps are preserved automatically through reloads
     if command -v hyprctl &> /dev/null; then
         hyprctl reload &> /dev/null || log_warn "Failed to reload Hyprland"
         log_success "Reloaded Hyprland"
@@ -594,6 +686,7 @@ main() {
     apply_gtk "$theme_name" "$config"
     apply_kvantum "$theme_name" "$config"
     apply_yazi "$theme_name" "$config"
+    apply_tmux "$theme_name" "$config"
 
     # Apply pywal for fallback apps
     apply_pywal "$theme_name" "$config"
