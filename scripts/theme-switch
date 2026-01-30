@@ -557,6 +557,103 @@ EOF
     log_success "Kvantum theme applied: $kvantum_theme"
 }
 
+# Apply Quickshell theme
+apply_quickshell() {
+    local theme_name="$1"
+    local config="$2"
+
+    local has_quickshell=$(echo "$config" | jq -r '.apps.quickshell // empty')
+
+    if [ -z "$has_quickshell" ]; then
+        log_warn "No quickshell config specified, skipping"
+        return 0
+    fi
+
+    log_info "Applying Quickshell theme"
+
+    # Extract colors from config
+    local bg=$(echo "$config" | jq -r '.apps.quickshell.colors.background')
+    local bg_light=$(echo "$config" | jq -r '.apps.quickshell.colors.background_light')
+    local fg=$(echo "$config" | jq -r '.apps.quickshell.colors.foreground')
+    local fg_dim=$(echo "$config" | jq -r '.apps.quickshell.colors.foreground_dim')
+    local accent=$(echo "$config" | jq -r '.apps.quickshell.colors.accent')
+    local accent_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.accent_bright')
+    local red=$(echo "$config" | jq -r '.apps.quickshell.colors.red')
+    local green=$(echo "$config" | jq -r '.apps.quickshell.colors.green')
+    local yellow=$(echo "$config" | jq -r '.apps.quickshell.colors.yellow')
+    local blue=$(echo "$config" | jq -r '.apps.quickshell.colors.blue')
+    local magenta=$(echo "$config" | jq -r '.apps.quickshell.colors.magenta')
+    local cyan=$(echo "$config" | jq -r '.apps.quickshell.colors.cyan')
+    local red_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.red_bright')
+    local green_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.green_bright')
+    local yellow_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.yellow_bright')
+    local blue_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.blue_bright')
+    local magenta_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.magenta_bright')
+    local cyan_bright=$(echo "$config" | jq -r '.apps.quickshell.colors.cyan_bright')
+    local separator=$(echo "$config" | jq -r '.apps.quickshell.colors.separator')
+    local ws_active=$(echo "$config" | jq -r '.apps.quickshell.colors.workspace_active')
+    local ws_occupied=$(echo "$config" | jq -r '.apps.quickshell.colors.workspace_occupied')
+    local ws_empty=$(echo "$config" | jq -r '.apps.quickshell.colors.workspace_empty')
+    local font_family=$(echo "$config" | jq -r '.apps.quickshell.font_family // "JetBrainsMono Nerd Font"')
+
+    # Read template and substitute colors
+    local template_file="$TEMPLATES_DIR/quickshell-colors.qml"
+
+    if [ ! -f "$template_file" ]; then
+        log_error "Quickshell template not found: $template_file"
+        return 1
+    fi
+
+    # Generate themed quickshell colors file
+    local quickshell_colors=$(cat "$template_file" | \
+        sed "s/{background}/$bg/g" | \
+        sed "s/{background_light}/$bg_light/g" | \
+        sed "s/{foreground_dim}/$fg_dim/g" | \
+        sed "s/{foreground}/$fg/g" | \
+        sed "s/{accent_bright}/$accent_bright/g" | \
+        sed "s/{accent}/$accent/g" | \
+        sed "s/{red_bright}/$red_bright/g" | \
+        sed "s/{red}/$red/g" | \
+        sed "s/{green_bright}/$green_bright/g" | \
+        sed "s/{green}/$green/g" | \
+        sed "s/{yellow_bright}/$yellow_bright/g" | \
+        sed "s/{yellow}/$yellow/g" | \
+        sed "s/{blue_bright}/$blue_bright/g" | \
+        sed "s/{blue}/$blue/g" | \
+        sed "s/{magenta_bright}/$magenta_bright/g" | \
+        sed "s/{magenta}/$magenta/g" | \
+        sed "s/{cyan_bright}/$cyan_bright/g" | \
+        sed "s/{cyan}/$cyan/g" | \
+        sed "s/{separator}/$separator/g" | \
+        sed "s/{workspace_active}/$ws_active/g" | \
+        sed "s/{workspace_occupied}/$ws_occupied/g" | \
+        sed "s/{workspace_empty}/$ws_empty/g" | \
+        sed "s/{font_family}/$font_family/g")
+
+    # Write to quickshell config directory
+    local quickshell_config="$HOME/.config/quickshell/Colors.qml"
+    local quickshell_dotfiles="$HOME/dotfiles/.config/quickshell/Colors.qml"
+
+    mkdir -p "$HOME/.config/quickshell"
+    echo "$quickshell_colors" > "$quickshell_config"
+
+    # Also update dotfiles version if it exists
+    if [ -d "$HOME/dotfiles/.config/quickshell" ]; then
+        echo "$quickshell_colors" > "$quickshell_dotfiles"
+    fi
+
+    # Reload quickshell if running
+    if pgrep -x quickshell &> /dev/null; then
+        # Send SIGHUP to reload, or use qs command
+        if command -v qs &> /dev/null; then
+            qs msg reload 2>/dev/null || pkill -HUP quickshell 2>/dev/null || true
+        fi
+        log_success "Quickshell theme applied and reloaded"
+    else
+        log_success "Quickshell theme applied (will take effect on next launch)"
+    fi
+}
+
 # Apply pywal for fallback apps
 apply_pywal() {
     local theme_name="$1"
@@ -687,6 +784,7 @@ main() {
     apply_kvantum "$theme_name" "$config"
     apply_yazi "$theme_name" "$config"
     apply_tmux "$theme_name" "$config"
+    apply_quickshell "$theme_name" "$config"
 
     # Apply pywal for fallback apps
     apply_pywal "$theme_name" "$config"

@@ -47,6 +47,33 @@
         "clock": "#7dcfff",
         "date": "#414868"
       }
+    },
+    "quickshell": {
+      "font_family": "JetBrainsMono Nerd Font Mono",
+      "colors": {
+        "background": "#1a1b26",
+        "background_light": "#24283b",
+        "foreground": "#c0caf5",
+        "foreground_dim": "#565f89",
+        "accent": "#e0af68",
+        "accent_bright": "#e0af68",
+        "red": "#f7768e",
+        "green": "#9ece6a",
+        "yellow": "#e0af68",
+        "blue": "#7aa2f7",
+        "magenta": "#bb9af7",
+        "cyan": "#7dcfff",
+        "red_bright": "#f7768e",
+        "green_bright": "#9ece6a",
+        "yellow_bright": "#e0af68",
+        "blue_bright": "#7aa2f7",
+        "magenta_bright": "#bb9af7",
+        "cyan_bright": "#7dcfff",
+        "separator": "#414868",
+        "workspace_active": "#7aa2f7",
+        "workspace_occupied": "#bb9af7",
+        "workspace_empty": "#414868"
+      }
     }
   },
   "pywal": {
