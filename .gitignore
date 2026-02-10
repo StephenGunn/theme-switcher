@@ -3,8 +3,8 @@
 .DS_Store
 
 # Personal wallpapers (too large for git)
-themes/*/wallpapers/*
-!themes/*/wallpapers/.gitkeep
+#themes/*/wallpapers/*
+#!themes/*/wallpapers/.gitkeep
 
 # Backup files
 *.bak
