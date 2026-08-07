@@ -33,13 +33,25 @@ if [ ${#WALLPAPERS[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Get the current wallpaper from swww query (if available)
-CURRENT_WALLPAPER=""
-if command -v swww &> /dev/null; then
-    # swww query returns lines like: ": DP-2: 2560x1440, scale: 1, currently displaying: image: /path/to/wallpaper.jpg"
-    # Extract just the path after "image: "
-    CURRENT_WALLPAPER=$(swww query 2>/dev/null | head -1 | sed 's/.*image: //')
+# Arch renamed swww to awww (extra/awww). Prefer awww, fall back to swww so
+# this keeps working on hosts still shipping the old name.
+SWWW=""
+for candidate in awww swww; do
+    if command -v "$candidate" &> /dev/null; then
+        SWWW="$candidate"
+        break
+    fi
+done
+
+if [ -z "$SWWW" ]; then
+    echo "Error: neither 'awww' nor 'swww' found — install with: sudo pacman -S awww"
+    exit 1
 fi
+
+# Get the current wallpaper from the daemon's query (if available)
+# Output lines look like: ": DP-2: 2560x1440, scale: 1, currently displaying: image: /path/to/wallpaper.jpg"
+# Extract just the path after "image: "
+CURRENT_WALLPAPER=$("$SWWW" query 2>/dev/null | head -1 | sed 's/.*image: //')
 
 # Select a random wallpaper, ensuring it's different from the current one
 if [ ${#WALLPAPERS[@]} -eq 1 ]; then
@@ -81,14 +93,14 @@ if [[ "$SELECTED_TRANSITION" == *":"* ]]; then
 
     # wave uses --transition-angle, grow/outer use --transition-pos
     if [[ "$TRANS_TYPE" == "wave" ]]; then
-        swww img "$RANDOM_WALLPAPER" \
+        "$SWWW" img "$RANDOM_WALLPAPER" \
             --transition-type "$TRANS_TYPE" \
             --transition-angle "$TRANS_VALUE" \
             --transition-duration 2 \
             --transition-fps 144
     else
         # For grow/outer positions
-        swww img "$RANDOM_WALLPAPER" \
+        "$SWWW" img "$RANDOM_WALLPAPER" \
             --transition-type "$TRANS_TYPE" \
             --transition-pos "$TRANS_VALUE" \
             --transition-duration 2 \
@@ -98,7 +110,7 @@ else
     echo "Applying transition: $SELECTED_TRANSITION"
 
     # For simple transitions like center/outer
-    swww img "$RANDOM_WALLPAPER" \
+    "$SWWW" img "$RANDOM_WALLPAPER" \
         --transition-type "$SELECTED_TRANSITION" \
         --transition-duration 2 \
         --transition-fps 144
