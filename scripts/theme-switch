@@ -667,7 +667,9 @@ apply_pywal() {
         cp "$TEMPLATES_DIR/starship.toml" "$HOME/.config/wal/templates/" 2>/dev/null || true
     fi
 
-    # Note: dunst colors are updated in-place, no template needed
+    if echo "$pywal_apps" | grep -q "dunst"; then
+        cp "$TEMPLATES_DIR/dunstrc" "$HOME/.config/wal/templates/" 2>/dev/null || true
+    fi
 
     # Regenerate templates
     wal -R -n -q
@@ -687,62 +689,21 @@ apply_pywal() {
     fi
 
     if echo "$pywal_apps" | grep -q "dunst"; then
-        # Update colors in-place rather than replacing the whole config
-        local dunst_config="$HOME/dotfiles/.config/dunst/dunstrc"
-        local wal_colors="$HOME/.cache/wal/colors.json"
+        # Dunst reads dunstrc.d/*.conf drop-ins after the base dunstrc, most
+        # important last. Writing colors to a drop-in leaves the tracked
+        # dotfiles dunstrc untouched, so a theme switch no longer dirties the
+        # repo. The old code edited ~/dotfiles/.config/dunst/dunstrc in place
+        # -- a file that had been deleted from the repo, so this branch always
+        # fell through to the warning below and dunst kept the system defaults.
+        local dunst_dropin_dir="$HOME/.config/dunst/dunstrc.d"
+        local generated="$HOME/.cache/wal/dunstrc"
 
-        if [ -f "$dunst_config" ] && [ -f "$wal_colors" ]; then
-            # Read colors from pywal
-            local bg=$(jq -r '.special.background' "$wal_colors")
-            local fg=$(jq -r '.special.foreground' "$wal_colors")
-            local color1=$(jq -r '.colors.color1' "$wal_colors")  # critical
-            local color4=$(jq -r '.colors.color4' "$wal_colors")  # low
-            local color6=$(jq -r '.colors.color6' "$wal_colors")  # normal/global
-
-            # Update colors in each section using awk for section-aware replacement
-            awk -v bg="$bg" -v fg="$fg" -v c1="$color1" -v c4="$color4" -v c6="$color6" '
-                /^\[global\]/           { section = "global" }
-                /^\[urgency_low\]/      { section = "low" }
-                /^\[urgency_normal\]/   { section = "normal" }
-                /^\[urgency_critical\]/ { section = "critical" }
-                /^\[/ && !/^\[(global|urgency)/ { section = "" }
-
-                section == "global" && /^[[:space:]]*frame_color[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" c6 "\""); print; next
-                }
-                section == "low" && /^[[:space:]]*background[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" bg "\""); print; next
-                }
-                section == "low" && /^[[:space:]]*foreground[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" fg "\""); print; next
-                }
-                section == "low" && /^[[:space:]]*frame_color[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" c4 "\""); print; next
-                }
-                section == "normal" && /^[[:space:]]*background[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" bg "\""); print; next
-                }
-                section == "normal" && /^[[:space:]]*foreground[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" fg "\""); print; next
-                }
-                section == "normal" && /^[[:space:]]*frame_color[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" c6 "\""); print; next
-                }
-                section == "critical" && /^[[:space:]]*background[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" bg "\""); print; next
-                }
-                section == "critical" && /^[[:space:]]*foreground[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" fg "\""); print; next
-                }
-                section == "critical" && /^[[:space:]]*frame_color[[:space:]]*=/ {
-                    sub(/=.*/, "= \"" c1 "\""); print; next
-                }
-                { print }
-            ' "$dunst_config" > "$dunst_config.tmp" && mv "$dunst_config.tmp" "$dunst_config"
-
-            log_success "Updated Dunst colors in-place"
+        if [ -f "$generated" ]; then
+            mkdir -p "$dunst_dropin_dir"
+            cp "$generated" "$dunst_dropin_dir/99-colors.conf"
+            log_success "Updated Dunst colors"
         else
-            log_warn "Dunst config or wal colors not found, skipping dunst"
+            log_warn "Pywal did not generate dunst colors, skipping dunst"
         fi
     fi
 
