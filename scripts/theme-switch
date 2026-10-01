@@ -67,7 +67,7 @@ get_themes() {
     fi
 
     for theme_dir in "$THEMES_DIR"/*; do
-        if [ -d "$theme_dir" ] && [ -f "$theme_dir/config.json" ]; then
+        if [ -d "$theme_dir" ] && { [ -f "$theme_dir/palette.json" ] || [ -f "$theme_dir/config.json" ]; }; then
             themes+=("$(basename "$theme_dir")")
         fi
     done
