@@ -1,0 +1,73 @@
+{
+  "name": "Catppuccin Mocha",
+  "description": "Soothing pastel theme for the high-spirited",
+  "palette": {
+    "background": "#1e1e2e",
+    "background_alt": "#313244",
+    "background_dark": "#181825",
+    "foreground": "#cdd6f4",
+    "foreground_dim": "#bac2de",
+    "cursor": "#f5e0dc",
+
+    "black": "#45475a",
+    "red": "#f38ba8",
+    "green": "#a6e3a1",
+    "yellow": "#f9e2af",
+    "blue": "#89b4fa",
+    "magenta": "#f5c2e7",
+    "cyan": "#94e2d5",
+    "white": "#bac2de",
+
+    "bright_black": "#585b70",
+    "bright_red": "#f38ba8",
+    "bright_green": "#a6e3a1",
+    "bright_yellow": "#f9e2af",
+    "bright_blue": "#89b4fa",
+    "bright_magenta": "#f5c2e7",
+    "bright_cyan": "#94e2d5",
+    "bright_white": "#a6adc8",
+
+    "accent": "#f9e2af",
+    "accent_bright": "#f9e2af",
+    "border": "#cba6f7",
+    "separator": "#45475a",
+
+    "surface0": "#313244",
+    "surface1": "#45475a",
+    "surface2": "#585b70"
+  },
+  "apps": {
+    "neovim": {
+      "colorscheme": "catppuccin",
+      "flavor": "mocha"
+    },
+    "lualine": {
+      "theme": "catppuccin"
+    },
+    "ghostty": {
+      "theme": "Catppuccin Mocha"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "gtk": {
+      "theme_name": "catppuccin-mocha-blue-standard+default",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S catppuccin-gtk-theme-mocha"
+    },
+    "kvantum": {
+      "theme_name": "Catppuccin-Mocha",
+      "note": "Install: yay -S kvantum kvantum-theme-catppuccin-git"
+    },
+    "yazi": {
+      "flavor": "catppuccin-mocha"
+    },
+    "quickshell": {
+      "font_family": "JetBrainsMono Nerd Font Mono"
+    }
+  },
+  "pywal": {
+    "apps": ["starship", "dunst"]
+  }
+}

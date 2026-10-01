@@ -1,0 +1,73 @@
+{
+  "name": "Kanagawa Dark",
+  "description": "Dark theme inspired by the colors of the famous painting by Katsushika Hokusai",
+  "palette": {
+    "background": "#1f1f28",
+    "background_alt": "#2a2a37",
+    "background_dark": "#16161d",
+    "foreground": "#dcd7ba",
+    "foreground_dim": "#727169",
+    "cursor": "#dcd7ba",
+
+    "black": "#16161d",
+    "red": "#c34043",
+    "green": "#98bb6b",
+    "yellow": "#c0a36e",
+    "blue": "#7e9cd8",
+    "magenta": "#957fb8",
+    "cyan": "#7fb4ca",
+    "white": "#dcd7ba",
+
+    "bright_black": "#54546d",
+    "bright_red": "#e82424",
+    "bright_green": "#98bb6b",
+    "bright_yellow": "#e6c384",
+    "bright_blue": "#7e9cd8",
+    "bright_magenta": "#d27e99",
+    "bright_cyan": "#7fb4ca",
+    "bright_white": "#dcd7ba",
+
+    "accent": "#e6c384",
+    "accent_bright": "#e6c384",
+    "border": "#7e9cd8",
+    "separator": "#2a2a37",
+
+    "surface0": "#16161d",
+    "surface1": "#2a2a37",
+    "surface2": "#363646"
+  },
+  "apps": {
+    "neovim": {
+      "colorscheme": "kanagawa",
+      "background": "dark"
+    },
+    "lualine": {
+      "theme": "kanagawa"
+    },
+    "ghostty": {
+      "theme": "Kanagawa"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "gtk": {
+      "theme_name": "Kanagawa-Dark",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S kanagawa-gtk-theme-git"
+    },
+    "kvantum": {
+      "theme_name": "Kanagawa",
+      "note": "Install: yay -S kvantum (May need manual Kanagawa theme)"
+    },
+    "yazi": {
+      "flavor": "kanagawa"
+    },
+    "quickshell": {
+      "font_family": "JetBrainsMono Nerd Font Mono"
+    }
+  },
+  "pywal": {
+    "apps": ["starship", "dunst"]
+  }
+}

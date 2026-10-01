@@ -1,0 +1,73 @@
+{
+  "name": "Tokyo Night",
+  "description": "Clean, dark theme inspired by the lights of Tokyo at night",
+  "palette": {
+    "background": "#1a1b26",
+    "background_alt": "#1f2335",
+    "background_dark": "#16161e",
+    "foreground": "#c0caf5",
+    "foreground_dim": "#565f89",
+    "cursor": "#c0caf5",
+
+    "black": "#15161e",
+    "red": "#f7768e",
+    "green": "#9ece6a",
+    "yellow": "#e0af68",
+    "blue": "#7aa2f7",
+    "magenta": "#bb9af7",
+    "cyan": "#7dcfff",
+    "white": "#c0caf5",
+
+    "bright_black": "#414868",
+    "bright_red": "#f7768e",
+    "bright_green": "#9ece6a",
+    "bright_yellow": "#e0af68",
+    "bright_blue": "#7aa2f7",
+    "bright_magenta": "#bb9af7",
+    "bright_cyan": "#7dcfff",
+    "bright_white": "#c0caf5",
+
+    "accent": "#e0af68",
+    "accent_bright": "#e0af68",
+    "border": "#7aa2f7",
+    "separator": "#414868",
+
+    "surface0": "#16161e",
+    "surface1": "#1f2335",
+    "surface2": "#24283b"
+  },
+  "apps": {
+    "neovim": {
+      "colorscheme": "tokyonight",
+      "background": "dark"
+    },
+    "lualine": {
+      "theme": "tokyonight"
+    },
+    "ghostty": {
+      "theme": "Tokyo Night"
+    },
+    "hyprpanel": {
+      "theme_file": "hyprpanel.json"
+    },
+    "gtk": {
+      "theme_name": "Tokyonight-Dark",
+      "icon_theme": "breeze-dark",
+      "cursor_theme": "Bibata-Modern-Ice",
+      "note": "Install: yay -S tokyonight-gtk-theme-git"
+    },
+    "kvantum": {
+      "theme_name": "TokyoNight",
+      "note": "Install: yay -S kvantum"
+    },
+    "yazi": {
+      "flavor": "tokyo-night"
+    },
+    "quickshell": {
+      "font_family": "JetBrainsMono Nerd Font Mono"
+    }
+  },
+  "pywal": {
+    "apps": ["starship", "dunst"]
+  }
+}
